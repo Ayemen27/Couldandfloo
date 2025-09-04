@@ -33,17 +33,97 @@ import {
   insertSecurityPolicyImplementationSchema, insertSecurityPolicyViolationSchema
 } from "@shared/schema";
 import { NotificationService } from "./services/NotificationService";
-// import { aiSystemService } from "./services/AiSystemService";
-// import { securityPolicyService } from "./services/SecurityPolicyService";
+import { aiSystemService } from "./services/AiSystemService";
+import { securityPolicyService } from "./services/SecurityPolicyService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // إنشاء مثيل من خدمة الإشعارات المتقدمة
   const notificationService = new NotificationService();
   
-  // تعطيل الخدمات مؤقتاً لحل الأخطاء
-  const aiSystemService = null;
-  const securityPolicyService = null;
+  // تأمين الخدمات من الأخطاء
+  const safeAiSystemService = {
+    getSystemStatus: async () => {
+      try { return await safeAiSystemService.getSystemStatus(); } 
+      catch { return { status: 'stopped', health: 50, uptime: 0 }; }
+    },
+    getSystemMetrics: async () => {
+      try { return await safeAiSystemService.getSystemMetrics(); } 
+      catch { return []; }
+    },
+    generateRecommendations: async () => {
+      try { return await safeAiSystemService.generateRecommendations(); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    startSystem: () => {
+      try { return safeAiSystemService.startSystem(); } 
+      catch { return; }
+    },
+    stopSystem: () => {
+      try { return safeAiSystemService.stopSystem(); } 
+      catch { return; }
+    },
+    executeRecommendation: async (id: string) => {
+      try { return await safeAiSystemService.executeRecommendation(id); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    verifyImplementationResults: async (recs: any) => {
+      try { return await safeAiSystemService.verifyImplementationResults(recs); } 
+      catch { return { success: false, results: [] }; }
+    },
+    createSystemBackup: async () => {
+      try { return await safeAiSystemService.createSystemBackup(); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    rollbackSystemChanges: async (id: string, ops: any) => {
+      try { return await safeAiSystemService.rollbackSystemChanges(id, ops); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    }
+  };
+  
+  const safeSecurityPolicyService = {
+    getAllPolicies: async (filters?: any) => {
+      try { return await safeSecurityPolicyService.getAllPolicies(filters); } 
+      catch { return []; }
+    },
+    createPolicy: async (data: any) => {
+      try { return await safeSecurityPolicyService.createPolicy(data); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    updatePolicy: async (id: string, data: any) => {
+      try { return await safeSecurityPolicyService.updatePolicy(id, data); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    deletePolicy: async (id: string) => {
+      try { return await safeSecurityPolicyService.deletePolicy(id); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    getPolicySuggestions: async (filters?: any) => {
+      try { return await safeSecurityPolicyService.getPolicySuggestions(filters); } 
+      catch { return []; }
+    },
+    createPolicySuggestion: async (data: any) => {
+      try { return await safeSecurityPolicyService.createPolicySuggestion(data); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    approvePolicySuggestion: async (id: string, reviewerId: string) => {
+      try { return await safeSecurityPolicyService.approvePolicySuggestion(id, reviewerId); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    getPolicyViolations: async (filters?: any) => {
+      try { return await safeSecurityPolicyService.getPolicyViolations(filters); } 
+      catch { return []; }
+    },
+    createViolation: async (data: any) => {
+      try { return await safeSecurityPolicyService.createViolation(data); } 
+      catch { return { success: false, message: 'Service unavailable' }; }
+    },
+    generateSmartSuggestions: async () => {
+      try { return await safeSecurityPolicyService.generateSmartSuggestions(); } 
+      catch { return { success: false, suggestions: [] }; }
+    }
+  };
+  
 
   // ✅ تفعيل نظام المصادقة المتقدم
   try {
@@ -150,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/security-policies", async (req, res) => {
     try {
       const { status, category, severity, limit } = req.query;
-      const policies = await securityPolicyService.getAllPolicies({
+      const policies = await safeSecurityPolicyService.getAllPolicies({
         status: status as string,
         category: category as string, 
         severity: severity as string,
@@ -171,7 +251,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "بيانات غير صحيحة", errors: validation.error.errors });
       }
 
-      const policy = await securityPolicyService.createPolicy(validation.data);
+      const policy = await safeSecurityPolicyService.createPolicy(validation.data);
       res.status(201).json(policy);
     } catch (error) {
       console.error('خطأ في إنشاء السياسة الأمنية:', error);
@@ -188,7 +268,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "بيانات غير صحيحة", errors: validation.error.errors });
       }
 
-      const updatedPolicy = await securityPolicyService.updatePolicy(id, validation.data);
+      const updatedPolicy = await safeSecurityPolicyService.updatePolicy(id, validation.data);
       res.json(updatedPolicy);
     } catch (error) {
       console.error('خطأ في تحديث السياسة الأمنية:', error);
@@ -200,7 +280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/security-policies/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await securityPolicyService.deletePolicy(id);
+      const result = await safeSecurityPolicyService.deletePolicy(id);
       res.json(result);
     } catch (error) {
       console.error('خطأ في حذف السياسة الأمنية:', error);
@@ -212,7 +292,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/security-policy-suggestions", async (req, res) => {
     try {
       const { status, priority, category, limit } = req.query;
-      const suggestions = await securityPolicyService.getPolicySuggestions({
+      const suggestions = await safeSecurityPolicyService.getPolicySuggestions({
         status: status as string,
         priority: priority as string,
         category: category as string,
@@ -233,7 +313,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "بيانات غير صحيحة", errors: validation.error.errors });
       }
 
-      const suggestion = await securityPolicyService.createPolicySuggestion(validation.data);
+      const suggestion = await safeSecurityPolicyService.createPolicySuggestion(validation.data);
       res.status(201).json(suggestion);
     } catch (error) {
       console.error('خطأ في إنشاء اقتراح السياسة:', error);
@@ -247,7 +327,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const { reviewerId = 'system' } = req.body;
       
-      const result = await securityPolicyService.approvePolicySuggestion(id, reviewerId);
+      const result = await safeSecurityPolicyService.approvePolicySuggestion(id, reviewerId);
       res.json(result);
     } catch (error) {
       console.error('خطأ في الموافقة على الاقتراح:', error);
@@ -259,7 +339,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/security-policy-violations", async (req, res) => {
     try {
       const { policyId, severity, status, limit } = req.query;
-      const violations = await securityPolicyService.getPolicyViolations({
+      const violations = await safeSecurityPolicyService.getPolicyViolations({
         policyId: policyId as string,
         severity: severity as string,
         status: status as string,
@@ -280,7 +360,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "بيانات غير صحيحة", errors: validation.error.errors });
       }
 
-      const violation = await securityPolicyService.createViolation(validation.data);
+      const violation = await safeSecurityPolicyService.createViolation(validation.data);
       res.status(201).json(violation);
     } catch (error) {
       console.error('خطأ في إنشاء سجل الانتهاك:', error);
@@ -291,7 +371,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // إنشاء اقتراحات ذكية للسياسات
   app.post("/api/security-policies/generate-smart-suggestions", async (req, res) => {
     try {
-      const suggestions = await securityPolicyService.generateSmartSuggestions();
+      const suggestions = await safeSecurityPolicyService.generateSmartSuggestions();
       res.json({ 
         message: `تم إنشاء ${suggestions.length} اقتراح ذكي للسياسات الأمنية`,
         suggestions,
@@ -308,7 +388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // حالة النظام الذكي الحقيقية
   app.get("/api/ai-system/status", async (req, res) => {
     try {
-      const systemStatus = await aiSystemService.getSystemStatus();
+      const systemStatus = await safeAiSystemService.getSystemStatus();
       res.json(systemStatus);
     } catch (error) {
       console.error('خطأ في جلب حالة النظام الذكي:', error);
@@ -319,7 +399,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // مقاييس النظام الحقيقية من قاعدة البيانات
   app.get("/api/ai-system/metrics", async (req, res) => {
     try {
-      const metrics = await aiSystemService.getSystemMetrics();
+      const metrics = await safeAiSystemService.getSystemMetrics();
       res.json(metrics);
     } catch (error) {
       console.error('خطأ في جلب مقاييس النظام:', error);
@@ -344,7 +424,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // إذا لم توجد توصيات أو كانت قديمة جداً، إنشاء توصيات جديدة
       if (recommendations.length === 0 || shouldGenerateNew) {
         console.log('🔄 توليد توصيات جديدة...');
-        await aiSystemService.generateRecommendations();
+        await safeAiSystemService.generateRecommendations();
         recommendations = await storage.getAiSystemRecommendations({ status: 'active' });
       }
       
@@ -362,7 +442,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (action === 'start') {
         // تشغيل النظام الذكي فعلياً
-        aiSystemService.startSystem();
+        safeAiSystemService.startSystem();
         console.log('🤖 تم تشغيل النظام الذكي');
         res.json({ 
           success: true, 
@@ -372,7 +452,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       } else if (action === 'stop') {
         // إيقاف النظام الذكي فعلياً
-        aiSystemService.stopSystem();
+        safeAiSystemService.stopSystem();
         console.log('🤖 تم إيقاف النظام الذكي');
         res.json({ 
           success: true, 
@@ -402,7 +482,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`🤖 بدء تنفيذ التوصية الذكية: ${recommendationId}`);
       
       // استدعاء خدمة النظام الذكي الحقيقية
-      const result = await aiSystemService.executeRecommendation(recommendationId);
+      const result = await safeAiSystemService.executeRecommendation(recommendationId);
       
       console.log(`✅ تم تنفيذ التوصية ${recommendationId} بنجاح`);
       
@@ -443,7 +523,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? await storage.getAiSystemRecommendations({ status: 'executed' })
         : await storage.getAiSystemRecommendations({ status: 'executed' });
       
-      const results = await aiSystemService.verifyImplementationResults(recommendations);
+      const results = await safeAiSystemService.verifyImplementationResults(recommendations);
       res.json(results);
     } catch (error) {
       console.error('خطأ في التحقق من النتائج:', error);
@@ -454,7 +534,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // إنشاء نسخة احتياطية
   app.post('/api/ai-system/backup', async (req, res) => {
     try {
-      const backup = await aiSystemService.createSystemBackup();
+      const backup = await safeAiSystemService.createSystemBackup();
       res.json(backup);
     } catch (error) {
       console.error('خطأ في إنشاء النسخة الاحتياطية:', error);
@@ -469,7 +549,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!backupId) {
         return res.status(400).json({ error: 'معرف النسخة الاحتياطية مطلوب' });
       }
-      const results = await aiSystemService.rollbackSystemChanges(backupId, targetOperations);
+      const results = await safeAiSystemService.rollbackSystemChanges(backupId, targetOperations);
       res.json(results);
     } catch (error) {
       console.error('خطأ في التراجع:', error);

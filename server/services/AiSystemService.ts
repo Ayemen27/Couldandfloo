@@ -1534,7 +1534,7 @@ export class AiSystemService {
         workers: await storage.getWorkers(),
         suppliers: await storage.getSuppliers(),
         systemMetrics: await this.getCurrentSystemState(),
-        aiDecisions: await storage.getRecentAiSystemDecisions(50),
+        aiDecisions: await storage.getAiSystemDecisions({ limit: 50 }),
         timestamp
       };
 

@@ -26,6 +26,7 @@ export interface NotificationPayload {
   recipients?: string[] | string;
   projectId?: string;
   scheduledAt?: Date;
+  metadata?: Record<string, any>;
   channelPreference?: {
     push?: boolean;
     email?: boolean;
