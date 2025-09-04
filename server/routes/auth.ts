@@ -422,6 +422,9 @@ router.post('/logout', requireAuth, async (req: AuthenticatedRequest, res) => {
  */
 router.get('/me', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'غير مصرح' });
+    }
     res.json({
       success: true,
       user: {

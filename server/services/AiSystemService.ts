@@ -690,7 +690,7 @@ export class AiSystemService {
           autoExecutable: recommendation.autoExecutable
         },
         outputData: executionResult,
-        confidence: parseInt(recommendation.confidence.toString()),
+        confidence: typeof recommendation.confidence === 'string' ? parseInt(recommendation.confidence) : recommendation.confidence,
         priority: recommendation.priority === 'critical' ? 5 : 
                   recommendation.priority === 'high' ? 4 : 3,
         status: executionResult.success ? 'executed' : 'failed',

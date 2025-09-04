@@ -66,8 +66,7 @@ export async function generateTokenPair(
   };
 
   const accessToken = jwt.sign(accessPayload, JWT_CONFIG.accessTokenSecret, {
-    expiresIn: JWT_CONFIG.accessTokenExpiry,
-    issuer: JWT_CONFIG.issuer,
+    expiresIn: JWT_CONFIG.accessTokenExpiry
   });
 
   // إنشاء Refresh Token
@@ -80,8 +79,7 @@ export async function generateTokenPair(
   };
 
   const refreshToken = jwt.sign(refreshPayload, JWT_CONFIG.refreshTokenSecret, {
-    expiresIn: JWT_CONFIG.refreshTokenExpiry,
-    issuer: JWT_CONFIG.issuer,
+    expiresIn: JWT_CONFIG.refreshTokenExpiry
   });
 
   // حفظ الجلسة في قاعدة البيانات
