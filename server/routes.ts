@@ -43,83 +43,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // تأمين الخدمات من الأخطاء
   const safeAiSystemService = {
-    getSystemStatus: async () => {
-      try { return await safeAiSystemService.getSystemStatus(); } 
+    getSystemStatus: async (): Promise<any> => {
+      try { return await aiSystemService.getSystemStatus(); } 
       catch { return { status: 'stopped', health: 50, uptime: 0 }; }
     },
-    getSystemMetrics: async () => {
-      try { return await safeAiSystemService.getSystemMetrics(); } 
+    getSystemMetrics: async (): Promise<any> => {
+      try { return await aiSystemService.getSystemMetrics(); } 
       catch { return []; }
     },
-    generateRecommendations: async () => {
-      try { return await safeAiSystemService.generateRecommendations(); } 
+    generateRecommendations: async (): Promise<any> => {
+      try { return await aiSystemService.generateRecommendations(); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    startSystem: () => {
-      try { return safeAiSystemService.startSystem(); } 
+    startSystem: (): void => {
+      try { aiSystemService.startSystem(); } 
       catch { return; }
     },
-    stopSystem: () => {
-      try { return safeAiSystemService.stopSystem(); } 
+    stopSystem: (): void => {
+      try { aiSystemService.stopSystem(); } 
       catch { return; }
     },
-    executeRecommendation: async (id: string) => {
-      try { return await safeAiSystemService.executeRecommendation(id); } 
+    executeRecommendation: async (id: string): Promise<any> => {
+      try { return await aiSystemService.executeRecommendation(id); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    verifyImplementationResults: async (recs: any) => {
-      try { return await safeAiSystemService.verifyImplementationResults(recs); } 
+    verifyImplementationResults: async (recs: any): Promise<any> => {
+      try { return await aiSystemService.verifyImplementationResults(recs); } 
       catch { return { success: false, results: [] }; }
     },
-    createSystemBackup: async () => {
-      try { return await safeAiSystemService.createSystemBackup(); } 
+    createSystemBackup: async (): Promise<any> => {
+      try { return await aiSystemService.createSystemBackup(); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    rollbackSystemChanges: async (id: string, ops: any) => {
-      try { return await safeAiSystemService.rollbackSystemChanges(id, ops); } 
+    rollbackSystemChanges: async (id: string, ops: any): Promise<any> => {
+      try { return await aiSystemService.rollbackSystemChanges(id, ops); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     }
   };
   
   const safeSecurityPolicyService = {
-    getAllPolicies: async (filters?: any) => {
-      try { return await safeSecurityPolicyService.getAllPolicies(filters); } 
+    getAllPolicies: async (filters?: any): Promise<any[]> => {
+      try { return await securityPolicyService.getAllPolicies(filters); } 
       catch { return []; }
     },
-    createPolicy: async (data: any) => {
-      try { return await safeSecurityPolicyService.createPolicy(data); } 
+    createPolicy: async (data: any): Promise<any> => {
+      try { return await securityPolicyService.createPolicy(data); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    updatePolicy: async (id: string, data: any) => {
-      try { return await safeSecurityPolicyService.updatePolicy(id, data); } 
+    updatePolicy: async (id: string, data: any): Promise<any> => {
+      try { return await securityPolicyService.updatePolicy(id, data); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    deletePolicy: async (id: string) => {
-      try { return await safeSecurityPolicyService.deletePolicy(id); } 
+    deletePolicy: async (id: string): Promise<any> => {
+      try { return await securityPolicyService.deletePolicy(id); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    getPolicySuggestions: async (filters?: any) => {
-      try { return await safeSecurityPolicyService.getPolicySuggestions(filters); } 
+    getPolicySuggestions: async (filters?: any): Promise<any[]> => {
+      try { return await securityPolicyService.getPolicySuggestions(filters); } 
       catch { return []; }
     },
-    createPolicySuggestion: async (data: any) => {
-      try { return await safeSecurityPolicyService.createPolicySuggestion(data); } 
+    createPolicySuggestion: async (data: any): Promise<any> => {
+      try { return await securityPolicyService.createPolicySuggestion(data); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    approvePolicySuggestion: async (id: string, reviewerId: string) => {
-      try { return await safeSecurityPolicyService.approvePolicySuggestion(id, reviewerId); } 
+    approvePolicySuggestion: async (id: string, reviewerId: string): Promise<any> => {
+      try { return await securityPolicyService.approvePolicySuggestion(id, reviewerId); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    getPolicyViolations: async (filters?: any) => {
-      try { return await safeSecurityPolicyService.getPolicyViolations(filters); } 
+    getPolicyViolations: async (filters?: any): Promise<any[]> => {
+      try { return await securityPolicyService.getPolicyViolations(filters); } 
       catch { return []; }
     },
-    createViolation: async (data: any) => {
-      try { return await safeSecurityPolicyService.createViolation(data); } 
+    createViolation: async (data: any): Promise<any> => {
+      try { return await securityPolicyService.createViolation(data); } 
       catch { return { success: false, message: 'Service unavailable' }; }
     },
-    generateSmartSuggestions: async () => {
-      try { return await safeSecurityPolicyService.generateSmartSuggestions(); } 
+    generateSmartSuggestions: async (): Promise<any> => {
+      try { return await securityPolicyService.generateSmartSuggestions(); } 
       catch { return { success: false, suggestions: [] }; }
     }
   };

@@ -3611,7 +3611,8 @@ export class DatabaseStorage implements IStorage {
         notificationId: notificationReadStates.notificationId,
         isRead: notificationReadStates.isRead,
         readAt: notificationReadStates.readAt,
-        createdAt: notificationReadStates.createdAt
+        createdAt: notificationReadStates.createdAt,
+        actionTaken: notificationReadStates.actionTaken
       }).from(notificationReadStates)
         .where(and(...conditions))
         .orderBy(desc(notificationReadStates.readAt));
@@ -3648,7 +3649,7 @@ export class DatabaseStorage implements IStorage {
         query = query.limit(filters.limit);
       }
 
-      return await query;
+      return await query.execute();
     } catch (error) {
       console.error('Error getting AI system logs:', error);
       return [];
@@ -3701,7 +3702,7 @@ export class DatabaseStorage implements IStorage {
         query = query.limit(filters.limit);
       }
 
-      return await query;
+      return await query.execute();
     } catch (error) {
       console.error('Error getting AI system metrics:', error);
       return [];
