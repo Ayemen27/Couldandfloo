@@ -3551,6 +3551,7 @@ export class DatabaseStorage implements IStorage {
         notificationId: notificationReadStates.notificationId,
         isRead: notificationReadStates.isRead,
         readAt: notificationReadStates.readAt,
+        actionTaken: notificationReadStates.actionTaken,
         createdAt: notificationReadStates.createdAt
       }).from(notificationReadStates)
         .where(and(

@@ -54,7 +54,7 @@ export class MaterialService {
       
       // تحديث الملخص اليومي بعد إضافة الشراء
       setImmediate(() => {
-        storage.updateDailySummaryForDate(purchase.projectId, purchase.date)
+        storage.updateDailySummaryForDate(purchase.projectId, purchase.purchaseDate)
           .catch(error => console.error("خطأ في تحديث الملخص اليومي:", error));
       });
       
