@@ -183,15 +183,7 @@ export async function verifyRefreshToken(token: string): Promise<JWTPayload | nu
       return null;
     }
 
-    return {
-      success: true,
-      user: {
-        userId: payload.userId,
-        email: payload.email,
-        role: payload.role,
-        sessionId: payload.sessionId
-      }
-    };
+    return payload;
   } catch (error) {
     console.error('خطأ في التحقق من Refresh Token:', error);
     return null;

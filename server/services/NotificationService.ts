@@ -24,6 +24,7 @@ export interface NotificationPayload {
   payload?: Record<string, any>;
   priority?: number;
   recipients?: string[] | string;
+  userId?: string;
   projectId?: string;
   scheduledAt?: Date;
   metadata?: Record<string, any>;
