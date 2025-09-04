@@ -21,8 +21,13 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "@database_url",
-    "SUPABASE_URL": "@supabase_url",
-    "SUPABASE_ANON_KEY": "@supabase_anon_key"
+    "JWT_ACCESS_SECRET": "@JWT_ACCESS_SECRET",
+    "JWT_REFRESH_SECRET": "@JWT_REFRESH_SECRET",
+    "ENCRYPTION_KEY": "@ENCRYPTION_KEY",
+    "SUPABASE_URL": "@SUPABASE_URL",
+    "SUPABASE_ANON_KEY": "@SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY": "@SUPABASE_SERVICE_ROLE_KEY",
+    "DATABASE_URL": "@DATABASE_URL",
+    "NODE_ENV": "@NODE_ENV"
   }
 }
